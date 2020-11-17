@@ -44,6 +44,13 @@ public class LogInActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), CreateAccountActivity.class);
                 startActivity(intent);
+
+                int key = SharedPreferencesHelper.getIntValue("id");
+                String uuid = SharedPreferencesHelper.getStringValue("uuid");
+
+                if(key != 0 && uuid != "") {
+                    finish();
+                }
             }
         });
     }
