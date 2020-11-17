@@ -2,6 +2,8 @@ package com.pixelworks.roam;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -63,13 +65,21 @@ public class CreateAccountActivity extends AppCompatActivity {
                                 new ApolloCall.Callback<CreateUserMutation.Data>() {
                                     @Override
                                     public void onResponse(@NotNull Response<CreateUserMutation.Data> response) {
-                                        int result = response.getData().createUser().id();
-                                        Log.d("TEST", String.valueOf(result));
+                                        int id = response.getData().createUser().id();
+                                        String uuid = response.getData().createUser().uuid();
+                                        Log.d("TEST", String.valueOf(id));
+                                        SharedPreferences sharedPreferences = getSharedPreferences("roam", Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                                        editor.putInt("id", id);
+                                        editor.putString("uuid", uuid);
+                                        editor.apply();
+                                        finish();
                                     }
 
                                     @Override
                                     public void onFailure(@NotNull ApolloException e) {
-                                        //Toast.makeText(MainActivity.this, "It didn't work!", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(CreateAccountActivity.this, "It didn't work!", Toast.LENGTH_LONG).show();
                                         Log.d("TEST", e.getCause().toString());
                                     }
                                 }
