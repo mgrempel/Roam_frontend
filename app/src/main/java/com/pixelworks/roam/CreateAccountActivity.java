@@ -1,10 +1,15 @@
 package com.pixelworks.roam;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -79,8 +84,16 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onFailure(@NotNull ApolloException e) {
-                                        //Toast.makeText(CreateAccountActivity.this, "It didn't work!", Toast.LENGTH_LONG).show();
                                         Log.d("TEST", e.getCause().toString());
+                                        //Something went wrong! Let's give the UI thread a call and let them know.
+//                                        Message message = mHandler.obtainMessage(0);
+//                                        message.sendToTarget();
+                                        CreateAccountActivity createAccountActivity = CreateAccountActivity.this;
+                                        createAccountActivity.runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                Toast.makeText(createAccountActivity, "An error has occurred!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
                                 }
                         );
