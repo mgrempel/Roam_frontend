@@ -44,7 +44,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
 
         ApolloClient apolloClient = ApolloClient.builder()
-                .serverUrl("http://10.0.2.2:8080/query")
+                .serverUrl(getString(R.string.api_location))
                 .build();
 
         //Let's handle our click event
