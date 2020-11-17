@@ -1,15 +1,15 @@
 mutation CreateUser( $userName:String!,
-  									 $password:String!, 
-  									 $email:String!, 
-  									 $firstName:String!, 
-  									 $lastName:String!, 
+  									 $password:String!,
+  									 $email:String!,
+  									 $firstName:String!,
+  									 $lastName:String!,
   									 $description:String!) {
-  createUser(input: { userName:    $userName, 
-    								  password:    $password, 
-    									email:       $email, 
-    									firstName:   $firstName, 
-    									lastName:    $lastName, 
+  createUser(input: { userName:    $userName,
+    								  password:    $password,
+    									email:       $email,
+    									firstName:   $firstName,
+    									lastName:    $lastName,
     									description: $description }) {
-    id
+    id, uuid
   }
 }
