@@ -6,12 +6,12 @@
     android:paddingRight="16dp"
     android:orientation="vertical" >
     <EditText
-        android:id="@+id/editTextUserName"
+        android:id="@+id/editTextLoginUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="User Name" />
     <EditText
-        android:id="@+id/editTextPassword"
+        android:id="@+id/editTextLoginPassword"
         android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
