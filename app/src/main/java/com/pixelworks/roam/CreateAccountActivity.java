@@ -73,21 +73,16 @@ public class CreateAccountActivity extends AppCompatActivity {
                                         int id = response.getData().createUser().id();
                                         String uuid = response.getData().createUser().uuid();
                                         Log.d("TEST", String.valueOf(id));
-                                        SharedPreferences sharedPreferences = getSharedPreferences("roam", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                                        editor.putInt("id", id);
-                                        editor.putString("uuid", uuid);
-                                        editor.apply();
+                                        SharedPreferencesHelper.setIntValue("id", id);
+                                        SharedPreferencesHelper.setStringValue("uuid", uuid);
+
                                         finish();
                                     }
 
                                     @Override
                                     public void onFailure(@NotNull ApolloException e) {
                                         Log.d("TEST", e.getCause().toString());
-                                        //Something went wrong! Let's give the UI thread a call and let them know.
-//                                        Message message = mHandler.obtainMessage(0);
-//                                        message.sendToTarget();
                                         CreateAccountActivity createAccountActivity = CreateAccountActivity.this;
                                         createAccountActivity.runOnUiThread(new Runnable() {
                                             public void run() {
