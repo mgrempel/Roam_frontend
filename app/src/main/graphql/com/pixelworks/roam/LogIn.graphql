@@ -1,0 +1,5 @@
+query LogIn($username:String!, $password:String!) {
+  LogIn(username: $username, password: $password) {
+    uuid, id
+  }
+}
