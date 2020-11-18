@@ -48,7 +48,7 @@ public class LogInActivity extends AppCompatActivity {
                 int key = SharedPreferencesHelper.getIntValue("id");
                 String uuid = SharedPreferencesHelper.getStringValue("uuid");
 
-                if(key != 0 && uuid.equals("")) {
+                if(key != 0 && !uuid.equals("")) {
                     finish();
                 }
             }
