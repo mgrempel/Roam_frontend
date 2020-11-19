@@ -1,0 +1,12 @@
+query GetUsersFriendsByUUID($uuid:String!) {
+  GetUserFriendsByUUID(uuid: $uuid) {
+    userName
+    firstName
+    lastName
+    description
+    posts {
+      title
+      content
+    }
+  }
+}
