@@ -7,12 +7,18 @@ public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String description;
+    private Post[] posts;
 
     public User(String userName, String firstName, String lastName, String description) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.description = description;
+    }
+
+    public User(String userName, String firstName, String lastName, String description, Post[] posts) {
+        this(userName, firstName, lastName, description);
+        this.posts = posts;
     }
 
     public String getUserName() {
