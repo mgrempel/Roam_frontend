@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -22,13 +25,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    //private Object[] data;
+    private ArrayList<User> users;
+
     private ListView listView;
 
     public void receiveData(Object[] incomingData) {
         Log.d("TEST", incomingData[0].toString());
 
-        ArrayList<User> users = new ArrayList<User>();
         for(Object object : incomingData) {
             GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID user = (GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID)object;
             users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description()));
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 this,
                 android.R.layout.simple_list_item_1,
                 users);
-        //Update the listview
+        //Update the ListView
         listView.setAdapter(arrayAdapter);
     }
 
@@ -51,10 +54,22 @@ public class MainActivity extends AppCompatActivity {
         //Initialize our helpers.
         new SharedPreferencesHelper(this);
 
-
-
         //Initialize our controls
+        users = new ArrayList<User>();
         listView = findViewById(R.id.lst_users);
+
+        //Set event listeners
+        listView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                User selectedUser = users.get(position);
+
+                //Start our view user activity
+                Intent intent = new Intent(view.getContext(), ViewFriendActivity.class);
+                intent.putExtra("user", selectedUser);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
