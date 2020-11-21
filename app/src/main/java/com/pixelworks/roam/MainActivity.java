@@ -29,12 +29,19 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
 
-    public void receiveData(Object[] incomingData) {
-        Log.d("TEST", incomingData[0].toString());
+    public void receiveData(@NotNull Object[] incomingData) {
+        //Log.d("TEST", incomingData[0].toString());
 
         for(Object object : incomingData) {
             GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID user = (GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID)object;
-            users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description()));
+
+            Post[] posts = new Post[user.posts.size()];
+
+            for(int i = 0; i < user.posts().size(); i++) {
+                posts[i] = new Post(user.posts().get(i).title(), user.posts().get(i).content());
+            }
+            //THIS IS UNTESTED, TEST ASAP
+            users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), posts));
         }
 
         //Apply the data to the list view
@@ -64,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User selectedUser = users.get(position);
 
+
+                Log.d("TEST", "I'm hitting the event listener for the list view.");
+
                 //Start our view user activity
                 Intent intent = new Intent(view.getContext(), ViewFriendActivity.class);
                 intent.putExtra("user", selectedUser);
@@ -76,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        //Empty our arraylist
+        this.users.clear();
         String uuid = SharedPreferencesHelper.getStringValue("uuid");
         if(uuid.equals("NOVALUE")) {
             //Redirect user to sign in page
