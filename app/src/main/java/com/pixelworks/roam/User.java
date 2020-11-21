@@ -37,6 +37,10 @@ public class User implements Serializable {
         return description;
     }
 
+    public Post[] getPosts() {
+        return posts;
+    }
+
     @Override
     public String toString() {
         return String.format("%s (%s %s)",
