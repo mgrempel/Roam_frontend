@@ -1,6 +1,8 @@
 package com.pixelworks.roam;
 
-public class Post {
+import java.io.Serializable;
+
+public class Post implements Serializable {
     private String title, description;
 
     public Post(String title, String description) {
