@@ -17,4 +17,9 @@ public class Post implements Serializable {
     public String getDescription() {
         return this.description;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s\n%s", title, description);
+    }
 }
