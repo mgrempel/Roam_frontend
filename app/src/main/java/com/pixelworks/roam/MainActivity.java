@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<User> users;
 
     private ListView listView;
+    private Button btnPost;
 
     public void receiveData(@NotNull Object[] incomingData) {
         //Log.d("TEST", incomingData[0].toString());
@@ -40,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < user.posts().size(); i++) {
                 posts[i] = new Post(user.posts().get(i).title(), user.posts().get(i).content());
             }
-            //THIS IS UNTESTED, TEST ASAP
             users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), posts));
         }
 
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         //Initialize our controls
         users = new ArrayList<User>();
         listView = findViewById(R.id.lst_users);
+        btnPost = findViewById(R.id.btnPost);
 
         //Set event listeners
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -77,6 +79,14 @@ public class MainActivity extends AppCompatActivity {
                 //Start our view user activity
                 Intent intent = new Intent(view.getContext(), ViewFriendActivity.class);
                 intent.putExtra("user", selectedUser);
+                startActivity(intent);
+            }
+        });
+
+        btnPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), CreatePostActivity.class);
                 startActivity(intent);
             }
         });
