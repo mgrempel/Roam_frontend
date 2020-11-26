@@ -15,10 +15,12 @@ import com.apollographql.apollo.exception.ApolloException;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 public class ViewPostsActivity extends AppCompatActivity {
 
-    TextView txtUserName, txtDescription;
-    ListView lstPosts;
+    private TextView txtUserName, txtDescription;
+    private ListView lstPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,14 @@ public class ViewPostsActivity extends AppCompatActivity {
 
                             @Override
                             public void onResponse(@NotNull Response<GetUserTreeByUUIDQuery.Data> response) {
-
+                                //Call our listener to pass off the details.
+                                viewPostsActivity.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        viewPostsActivity.response(response.getData().GetUserTreeByUUID().userName(),
+                                                                   response.getData().GetUserTreeByUUID().description(),
+                                                                   response.getData().GetUserTreeByUUID().posts().toArray());
+                                    }
+                                });
                             }
 
                             @Override
@@ -60,5 +69,27 @@ public class ViewPostsActivity extends AppCompatActivity {
                             }
                         }
                 );
+    }
+
+    //Handles the response from the thread contacting the API. contains information about the users username, description, and their posts.
+    public void response(String username, String description, Object[] posts) {
+        txtUserName.setText(username);
+        txtDescription.setText(description);
+
+        //Handle the posts for our listview
+        ArrayList<Post> selfPosts = new ArrayList<Post>();
+        for(Object object : posts) {
+            GetUserTreeByUUIDQuery.Post selfPost = (GetUserTreeByUUIDQuery.Post)object;
+
+            selfPosts.add(new Post(selfPost.title(), selfPost.content()));
+        }
+
+        //Update our listview
+        ArrayAdapter<Post> arrayAdapter = new ArrayAdapter<Post>(
+                this,
+                android.R.layout.simple_list_item_1,
+                selfPosts
+        );
+        lstPosts.setAdapter(arrayAdapter);
     }
 }

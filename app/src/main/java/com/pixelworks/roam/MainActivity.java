@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button btnPost, btnUserPost;
 
-    public void receiveData(@NotNull Object[] incomingData) {
+    public void receiveData(Object[] incomingData) {
         //Log.d("TEST", incomingData[0].toString());
 
         for(Object object : incomingData) {
