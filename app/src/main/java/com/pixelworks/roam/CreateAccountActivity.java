@@ -92,8 +92,6 @@ public class CreateAccountActivity extends AppCompatActivity {
                                     }
                                 }
                         );
-
-                //Handle request to determine validity of response.
             }
         });
     }
