@@ -17,7 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Roam">
-        <activity android:name=".CreatePostActivity"></activity>
+        <activity android:name=".BluetoothConnectActivity"></activity>
+        <activity android:name=".ViewPostsActivity" />
+        <activity android:name=".CreatePostActivity" />
         <activity android:name=".ViewFriendActivity" />
         <activity android:name=".LogInActivity" />
         <activity android:name=".MainActivity">
