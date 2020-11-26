@@ -1,0 +1,61 @@
+input NewPost {
+  title: String!
+  content: String!
+  uuid: String!
+}
+
+type Query {
+  GetUserById(id: Int!): User!
+  GetUserByUUID(uuid: String!): User!
+  LogIn(username: String!, password: String!): User!
+  GetUserPostsByUUID(uuid: String!): [Post!]!
+  GetUserFriendPostsByUUID(uuid: String!): [Post!]!
+  GetUserFriendsByUUID(uuid: String!): [User!]!
+}
+
+type User {
+  id: Int!
+  userName: String!
+  password: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  description: String!
+  uuid: String!
+  posts: [Post!]!
+  friends: [User!]!
+}
+
+input NewUser {
+  userName: String!
+  password: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  description: String!
+}
+
+type Mutation {
+  createUser(input: NewUser!): User!
+  createPost(input: NewPost!): Post!
+  addFriendById(uuid: String!, id: Int!): User!
+}
+
+type Post {
+  id: Int!
+  title: String!
+  content: String!
+  userId: Int!
+  user: User!
+}
+
+type NewsPost {
+  id: Int!
+  title: String!
+  content: String!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
