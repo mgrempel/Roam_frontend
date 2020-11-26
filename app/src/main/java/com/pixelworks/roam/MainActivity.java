@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<User> users;
 
     private ListView listView;
-    private Button btnPost;
+    private Button btnPost, btnUserPost;
 
     public void receiveData(@NotNull Object[] incomingData) {
         //Log.d("TEST", incomingData[0].toString());
@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         users = new ArrayList<User>();
         listView = findViewById(R.id.lst_users);
         btnPost = findViewById(R.id.btnPost);
+        btnUserPost = findViewById(R.id.btnUserPosts);
 
         //Set event listeners
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -87,6 +88,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), CreatePostActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnUserPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ViewPostsActivity.class);
                 startActivity(intent);
             }
         });
