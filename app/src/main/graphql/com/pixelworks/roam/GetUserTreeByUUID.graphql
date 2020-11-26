@@ -1,0 +1,10 @@
+query GetUserTreeByUUID($uuid:String!) {
+  GetUserTreeByUUID(uuid: $uuid) {
+    userName
+    description
+    posts {
+      title,
+      content
+    }
+  }
+}

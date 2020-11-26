@@ -14,14 +14,16 @@
         tools:layout_editor_absoluteX="106dp" />
 
     <Button
-        android:id="@+id/btnSettings"
+        android:id="@+id/btnUserPosts"
         android:layout_width="100dp"
         android:layout_height="45dp"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="16dp"
-        android:text="Settings"
+        android:text="Posts"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lst_users" />
+        app:layout_constraintTop_toBottomOf="@+id/lst_users"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnPost"
@@ -30,10 +32,12 @@
         android:layout_marginTop="44dp"
         android:layout_marginEnd="48dp"
         android:text="Post"
-        app:layout_constraintEnd_toStartOf="@+id/btnSettings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnUserPosts"
         app:layout_constraintHorizontal_bias="0.979"
         app:layout_constraintStart_toEndOf="@+id/btnConnect"
-        app:layout_constraintTop_toBottomOf="@+id/lst_users" />
+        app:layout_constraintTop_toBottomOf="@+id/lst_users"
+        app:layout_constraintVertical_bias="0.155" />
 
     <Button
         android:id="@+id/btnConnect"
@@ -41,7 +45,9 @@
         android:layout_height="45dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="48dp"
-        android:text="Connect"
+        android:text="Con"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lst_users" />
+        app:layout_constraintTop_toBottomOf="@+id/lst_users"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
