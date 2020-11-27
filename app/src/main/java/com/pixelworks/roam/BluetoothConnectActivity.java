@@ -27,6 +27,23 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
+        prepareRadios();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //Handle callback for turning on bluetooth.
+        if(requestCode == 1) {
+            if(resultCode != RESULT_OK) {
+                finish();
+            }
+        }
+    }
+
+    //Prepare location and bluetooth radios before searching for nearby friends
+    private void prepareRadios() {
         //Get our bluetooth object
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothAdapter == null) {
@@ -48,12 +65,8 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
         //Request location permissions
         if ( Build.VERSION.SDK_INT >= 23){
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED  ){
-                requestPermissions(new String[]{
-                                android.Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_CODE_ASK_PERMISSIONS);
-                return ;
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED  ){
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
             }
         }
 
@@ -61,19 +74,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Intent enableLocation = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(enableLocation);
-        }
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //Handle callback for turning on bluetooth.
-        if(requestCode == 1) {
-            if(resultCode != RESULT_OK) {
-                finish();
-            }
         }
     }
 
