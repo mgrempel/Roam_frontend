@@ -6,19 +6,33 @@ import androidx.core.app.ActivityCompat;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.AdvertiseData;
+import android.bluetooth.le.AdvertiseSettings;
+import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelUuid;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.nio.ByteBuffer;
 
 public class BluetoothConnectActivity extends AppCompatActivity {
 
     private BluetoothAdapter bluetoothAdapter;
     private LocationManager locationManager;
+
+    //BLE advertiser stuff
+    private BluetoothLeAdvertiser advertiser;
+    private AdvertiseCallback advertiseCallback;
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
@@ -27,7 +41,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
+        //Ensure bluetooth and location are running
         prepareRadios();
+
+        //start advertising
+        advertiserPrimer();
     }
 
     @Override
@@ -75,6 +93,65 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             Intent enableLocation = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(enableLocation);
         }
+    }
+
+    //Primes our bluetooth low energy listener
+    private void advertiserPrimer() {
+
+        //Establish our transmission settings
+        AdvertiseSettings advertiseSettings = new AdvertiseSettings.Builder()
+                .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+                .setConnectable(false)
+                .build();
+
+        //Make services public, map data to service
+        ParcelUuid puuid = ParcelUuid.fromString(getString(R.string.serviceSig));
+        int id = SharedPreferencesHelper.getIntValue("id");
+        AdvertiseData advertiseData = new AdvertiseData.Builder()
+                .setIncludeDeviceName(false)
+                .addServiceUuid(puuid)
+                .addServiceData(puuid, ByteBuffer.allocate(4).putInt(id).array())
+                .build();
+
+        advertiseCallback = new AdvertiseCallback() {
+            @Override
+            public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+                Log.d("TEST", "BLE started advertising");
+                super.onStartSuccess(settingsInEffect);
+            }
+
+            @Override
+            public void onStartFailure(int errorCode) {
+                Log.d("TEST", "BLE listener failed with code: " + errorCode);
+                super.onStartFailure(errorCode);
+            }
+        };
+
+        //Everything is prepared, let's start advertising.
+        if(bluetoothAdapter.isEnabled()) {
+            advertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
+            advertiser.startAdvertising(advertiseSettings, advertiseData, advertiseCallback);
+        }
+
+        //Define our callbacks
+//        ScanCallback scanCallback = new ScanCallback() {
+//            @Override
+//            public void onScanResult(int callbackType, ScanResult result) {
+//                super.onScanResult(callbackType, result);
+//
+//                //Ensure results aren't null
+//                if(result == null) return;
+//
+//                Log.d("TEST", "Successfully received results from scan")
+//            }
+//
+//            @Override
+//            public void onScanFailed(int errorCode) {
+//                Log.d("TEST", "Bluetooth error code returned:" + errorCode);
+//                super.onScanFailed(errorCode);
+//            }
+//        };
     }
 
     @Override
