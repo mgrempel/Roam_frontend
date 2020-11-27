@@ -43,9 +43,25 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
         //Ensure bluetooth and location are running
         prepareRadios();
+    }
 
-        //start advertising
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //Start our advertisement
         advertiserPrimer();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //Stop our advertisement
+        if(bluetoothAdapter.isEnabled()) {
+            Log.d("TEST", "Activity paused, stopping the broadcast.");
+            advertiser.stopAdvertising(advertiseCallback);
+        }
     }
 
     @Override
