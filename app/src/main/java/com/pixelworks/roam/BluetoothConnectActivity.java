@@ -83,10 +83,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             if(resultCode != RESULT_OK) {
                 finish();
             }
-            //Start our advertiser
-            advertiserPrimer();
-            //Start our listener
-            listenerPrimer();
         }
     }
 
