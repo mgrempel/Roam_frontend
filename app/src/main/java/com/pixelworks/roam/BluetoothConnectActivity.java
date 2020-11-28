@@ -51,24 +51,20 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
-        //Ensure bluetooth and location are running
-        prepareRadios();
+        //prepareRadios();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        //Start our advertisement
-        advertiserPrimer();
-
-        //Start our listener
-        listenerPrimer();
+        //Ensure bluetooth and location are running
+        prepareRadios();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
 
         //Stop our advertisement
         if(bluetoothAdapter.isEnabled()) {
@@ -87,6 +83,10 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             if(resultCode != RESULT_OK) {
                 finish();
             }
+            //Start our advertiser
+            advertiserPrimer();
+            //Start our listener
+            listenerPrimer();
         }
     }
 
@@ -122,6 +122,12 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Intent enableLocation = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(enableLocation);
+        }
+
+        //If radios are enabled, we can turn them on.
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && bluetoothAdapter.isEnabled()) {
+            advertiserPrimer();
+            listenerPrimer();
         }
     }
 
