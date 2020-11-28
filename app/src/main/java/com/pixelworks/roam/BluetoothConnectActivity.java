@@ -10,8 +10,11 @@ import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,6 +27,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class BluetoothConnectActivity extends AppCompatActivity {
 
@@ -33,6 +39,10 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     //BLE advertiser stuff
     private BluetoothLeAdvertiser advertiser;
     private AdvertiseCallback advertiseCallback;
+
+    //BLE listener stuff
+    private BluetoothLeScanner scanner;
+    private ScanCallback scanCallback;
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
@@ -51,6 +61,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
         //Start our advertisement
         advertiserPrimer();
+
+        //Start our listener
+        listenerPrimer();
     }
 
     @Override
@@ -61,6 +74,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         if(bluetoothAdapter.isEnabled()) {
             Log.d("TEST", "Activity paused, stopping the broadcast.");
             advertiser.stopAdvertising(advertiseCallback);
+            scanner.stopScan(scanCallback);
         }
     }
 
@@ -149,25 +163,46 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             advertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
             advertiser.startAdvertising(advertiseSettings, advertiseData, advertiseCallback);
         }
+    }
 
+    private void listenerPrimer() {
         //Define our callbacks
-//        ScanCallback scanCallback = new ScanCallback() {
-//            @Override
-//            public void onScanResult(int callbackType, ScanResult result) {
-//                super.onScanResult(callbackType, result);
-//
-//                //Ensure results aren't null
-//                if(result == null) return;
-//
-//                Log.d("TEST", "Successfully received results from scan")
-//            }
-//
-//            @Override
-//            public void onScanFailed(int errorCode) {
-//                Log.d("TEST", "Bluetooth error code returned:" + errorCode);
-//                super.onScanFailed(errorCode);
-//            }
-//        };
+        scanCallback = new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                super.onScanResult(callbackType, result);
+
+                //Ensure results aren't null
+                if(result == null) return;
+
+                Log.d("TEST", new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0))));
+
+                Log.d("TEST", "Successfully received results from scan");
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                Log.d("TEST", "Bluetooth error code returned:" + errorCode);
+                super.onScanFailed(errorCode);
+            }
+        };
+        //Let's ignore every other bluetooth signal.
+        ScanFilter scanFilter = new ScanFilter.Builder()
+                .setServiceUuid(new ParcelUuid(UUID.fromString(getString(R.string.serviceSig))))
+                .build();
+
+        ArrayList<ScanFilter> filters = new ArrayList<ScanFilter>();
+        filters.add(scanFilter);
+
+        //Define our settings for the scan.
+        ScanSettings scanSettings = new ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .build();
+
+        //Start scanning
+        scanner = bluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+        scanner.startScan(filters, scanSettings, scanCallback);
+        Log.d("TEST", "Started the scanner");
     }
 
     @Override
