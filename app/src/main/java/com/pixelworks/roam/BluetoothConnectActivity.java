@@ -21,12 +21,15 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -51,7 +54,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
-        //prepareRadios();
+        prepareRadios();
     }
 
     @Override
@@ -59,7 +62,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onResume();
 
         //Ensure bluetooth and location are running
-        prepareRadios();
+        //prepareRadios();
     }
 
     @Override
@@ -133,7 +136,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         //Establish our transmission settings
         AdvertiseSettings advertiseSettings = new AdvertiseSettings.Builder()
                 .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
-                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
                 .setConnectable(false)
                 .build();
 
@@ -143,7 +146,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         AdvertiseData advertiseData = new AdvertiseData.Builder()
                 .setIncludeDeviceName(false)
                 .addServiceUuid(puuid)
-                .addServiceData(puuid, ByteBuffer.allocate(4).putInt(id).array())
+                .addServiceData(puuid, String.valueOf(SharedPreferencesHelper.getIntValue("id")).getBytes(StandardCharsets.UTF_8))
                 .build();
 
         advertiseCallback = new AdvertiseCallback() {
@@ -176,7 +179,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
                 //Ensure results aren't null
                 if(result == null) return;
-
+                //Debug.waitForDebugger();
                 Log.d("TEST", new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0))));
 
                 Log.d("TEST", "Successfully received results from scan");
@@ -198,7 +201,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
         //Define our settings for the scan.
         ScanSettings scanSettings = new ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
                 .build();
 
         //Start scanning
