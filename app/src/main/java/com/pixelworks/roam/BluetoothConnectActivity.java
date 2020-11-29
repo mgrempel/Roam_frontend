@@ -27,6 +27,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.apollographql.apollo.ApolloCall;
+import com.apollographql.apollo.ApolloClient;
+import com.apollographql.apollo.api.Response;
+import com.apollographql.apollo.exception.ApolloException;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +56,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     //Ids of those around us
     ArrayList<Integer> foundIds;
+    ArrayList<User> users;
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
@@ -57,6 +65,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
         foundIds = new ArrayList<Integer>();
+        users = new ArrayList<User>();
 
         prepareRadios();
     }
@@ -190,6 +199,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
                     //Store the integer to ensure we don't keep hitting the database.
                     foundIds.add(friendId);
+
+                    //Hit the database with the found userID.
+                    processUserID(friendId);
                 }
             }
 
@@ -232,5 +244,42 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    private void processUserID(int userId) {
+        //Call the API and find the user associated with the ID.
+        ApolloClient apolloClient = ApolloClient.builder()
+                .serverUrl(getString(R.string.api_location))
+                .build();
+
+        final GetUserByIdQuery getUser = GetUserByIdQuery.builder()
+                .id(userId)
+                .build();
+
+        apolloClient
+                .query(getUser)
+                .enqueue(
+                        new ApolloCall.Callback<GetUserByIdQuery.Data>() {
+                            @Override
+                            public void onResponse(@NotNull Response<GetUserByIdQuery.Data> response) {
+                                User user = new User(response.getData().GetUserById().userName(), userId);
+
+                                BluetoothConnectActivity bluetoothConnectActivity = BluetoothConnectActivity.this;
+                                bluetoothConnectActivity.runOnUiThread(new Runnable() {
+                                    public void run() {bluetoothConnectActivity.receiveData(user);}
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(@NotNull ApolloException e) {
+                                Log.d("TEST", "Couldn't find related user id. Possible transmission corruption");
+                            }
+                        }
+                );
+        //Process response add to arraylist of users
+    }
+
+    private void receiveData(User user) {
+        Log.d("TEST", "Query returned details for " + user.getUserName());
     }
 }
