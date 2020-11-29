@@ -25,6 +25,8 @@ import android.os.Debug;
 import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -72,6 +74,19 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         foundIds = new ArrayList<Integer>();
         users = new ArrayList<User>();
         lst_users = findViewById(R.id.lst_users);
+
+        //Handle our onclick for the listview
+        lst_users.setOnItemClickListener(new ListView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //Get the user which has been selected
+                User user = users.get(position);
+
+                //Add the user as a friend
+                addFriend(user.getId());
+            }
+        });
+
         prepareRadios();
     }
 
@@ -293,5 +308,47 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                                                                   android.R.layout.simple_list_item_1,
                                                                   users);
         lst_users.setAdapter(arrayAdapter);
+    }
+
+    private void addFriend(int friendId) {
+        //Create our client
+        ApolloClient apolloClient = ApolloClient.builder()
+                .serverUrl(getString(R.string.api_location))
+                .build();
+
+        final AddFriendByIdMutation addFriend = AddFriendByIdMutation.builder()
+                                                    .uuid(SharedPreferencesHelper.getStringValue("uuid"))
+                                                    .id(friendId)
+                                                    .build();
+
+        //Make our call
+        apolloClient
+                .mutate(addFriend)
+                .enqueue(
+                        new ApolloCall.Callback<AddFriendByIdMutation.Data>() {
+                            BluetoothConnectActivity current = BluetoothConnectActivity.this;
+
+                            @Override
+                            public void onResponse(@NotNull Response<AddFriendByIdMutation.Data> response) {
+                                Log.d("TEST", "Successfully received response from API.");
+                                current.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(current, "Added Friend!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(@NotNull ApolloException e) {
+                                Log.d("TEST", "Got a failure response from the API.");
+
+                                current.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(current, "Error!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                );
     }
 }
