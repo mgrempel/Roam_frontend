@@ -257,9 +257,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     finish();
                 }
-                else {
-                    
-                }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
