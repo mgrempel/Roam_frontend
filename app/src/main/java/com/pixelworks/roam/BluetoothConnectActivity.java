@@ -25,6 +25,8 @@ import android.os.Debug;
 import android.os.ParcelUuid;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.apollographql.apollo.ApolloCall;
@@ -55,8 +57,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private ScanCallback scanCallback;
 
     //Ids of those around us
-    ArrayList<Integer> foundIds;
-    ArrayList<User> users;
+    private ArrayList<Integer> foundIds;
+    private ArrayList<User> users;
+
+    //Controls
+    private ListView lst_users;
 
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
@@ -66,7 +71,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth_connect);
         foundIds = new ArrayList<Integer>();
         users = new ArrayList<User>();
-
+        lst_users = findViewById(R.id.lst_users);
         prepareRadios();
     }
 
@@ -281,5 +286,12 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private void receiveData(User user) {
         Log.d("TEST", "Query returned details for " + user.getUserName());
+
+        //Add our user to our users array list
+        users.add(user);
+        ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(this,
+                                                                  android.R.layout.simple_list_item_1,
+                                                                  users);
+        lst_users.setAdapter(arrayAdapter);
     }
 }

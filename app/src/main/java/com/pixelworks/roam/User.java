@@ -51,9 +51,14 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("%s (%s %s)",
-                        userName,
-                        firstName,
-                        lastName);
+        if(firstName == null && lastName == null) {
+            return userName;
+        }
+        else {
+            return String.format("%s (%s %s)",
+                    userName,
+                    firstName,
+                    lastName);
+        }
     }
 }
