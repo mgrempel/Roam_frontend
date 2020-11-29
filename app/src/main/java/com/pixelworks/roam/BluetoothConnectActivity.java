@@ -47,22 +47,18 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private BluetoothLeScanner scanner;
     private ScanCallback scanCallback;
 
+    //Ids of those around us
+    ArrayList<Integer> foundIds;
+
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
+        foundIds = new ArrayList<Integer>();
 
         prepareRadios();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        //Ensure bluetooth and location are running
-        //prepareRadios();
     }
 
     @Override
@@ -179,10 +175,22 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
                 //Ensure results aren't null
                 if(result == null) return;
-                //Debug.waitForDebugger();
-                Log.d("TEST", new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0))));
+                int friendId = -1;
+                //Let's parse our ID request
+                try {
+                    friendId = Integer.parseInt(new String(result.getScanRecord().getServiceData(result.getScanRecord().getServiceUuids().get(0))));
+                }
+                catch(Exception e) {
+                    Log.d("TEST", "Possible corruption in transmission, discarding data.");
+                }
 
-                Log.d("TEST", "Successfully received results from scan");
+                if(friendId != -1 && !foundIds.contains(friendId)) {
+                    Log.d("TEST", String.valueOf(friendId));
+                    Log.d("TEST", "Successfully received results from scan");
+
+                    //Store the integer to ensure we don't keep hitting the database.
+                    foundIds.add(friendId);
+                }
             }
 
             @Override
