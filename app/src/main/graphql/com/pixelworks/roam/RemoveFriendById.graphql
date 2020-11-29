@@ -1,0 +1,6 @@
+mutation RemoveFriendById($uuid:String!, $id:Int!) {
+	removeFriendById(uuid: $uuid, id: $id) {
+    userName,
+    id
+  }
+}

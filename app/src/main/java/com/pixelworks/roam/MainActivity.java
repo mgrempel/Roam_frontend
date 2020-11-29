@@ -54,6 +54,18 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
     }
 
+    public void removeUser(int index) {
+        users.remove(index);
+
+        ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(
+                this,
+                android.R.layout.simple_list_item_1,
+                users
+        );
+
+        listView.setAdapter(arrayAdapter);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +94,18 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(view.getContext(), ViewFriendActivity.class);
                 intent.putExtra("user", selectedUser);
                 startActivity(intent);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new ListView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //Get user we want to unfriend
+                User user = users.get(position);
+
+                unFriendUser(user.getId(), position);
+
+                return true;
             }
         });
 
@@ -166,6 +190,44 @@ public class MainActivity extends AppCompatActivity {
                                 mainActivity.runOnUiThread(new Runnable() {
                                     public void run() {
                                         Toast.makeText(mainActivity, "An error has occurred!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                );
+    }
+
+    private void unFriendUser(int userId, int location) {
+        //Create our client
+        ApolloClient apolloClient = ApolloClient.builder()
+                .serverUrl(getString(R.string.api_location))
+                .build();
+
+        final RemoveFriendByIdMutation unFriend = RemoveFriendByIdMutation.builder()
+                .uuid(SharedPreferencesHelper.getStringValue("uuid"))
+                .id(userId)
+                .build();
+
+        apolloClient
+                .mutate(unFriend)
+                .enqueue(
+                        new ApolloCall.Callback<RemoveFriendByIdMutation.Data>() {
+                            MainActivity main = MainActivity.this;
+                            @Override
+                            public void onResponse(@NotNull Response<RemoveFriendByIdMutation.Data> response) {
+                                main.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        //Remove user from the array
+                                        main.removeUser(location);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailure(@NotNull ApolloException e) {
+                                main.runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(main, "An error has occured!", Toast.LENGTH_SHORT).show();
                                     }
                                 });
                             }
