@@ -1,0 +1,5 @@
+mutation AddFriendById($uuid:String!, $id:Int!) {
+  addFriendById(uuid: $uuid, id: $id) {
+    userName
+  }
+}

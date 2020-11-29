@@ -7,6 +7,7 @@ public class User implements Serializable {
     private String firstName;
     private String lastName;
     private String description;
+    private int id;
     private Post[] posts;
 
     public User(String userName, String firstName, String lastName, String description) {
@@ -19,6 +20,11 @@ public class User implements Serializable {
     public User(String userName, String firstName, String lastName, String description, Post[] posts) {
         this(userName, firstName, lastName, description);
         this.posts = posts;
+    }
+
+    public User(String userName, int id) {
+        this.userName = userName;
+        this.id = id;
     }
 
     public String getUserName() {
@@ -37,15 +43,22 @@ public class User implements Serializable {
         return description;
     }
 
+    public int getId() { return id; }
+
     public Post[] getPosts() {
         return posts;
     }
 
     @Override
     public String toString() {
-        return String.format("%s (%s %s)",
-                        userName,
-                        firstName,
-                        lastName);
+        if(firstName == null && lastName == null) {
+            return userName;
+        }
+        else {
+            return String.format("%s (%s %s)",
+                    userName,
+                    firstName,
+                    lastName);
+        }
     }
 }

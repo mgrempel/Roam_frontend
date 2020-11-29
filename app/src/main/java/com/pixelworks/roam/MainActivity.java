@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<User> users;
 
     private ListView listView;
-    private Button btnPost, btnUserPost;
+    private Button btnPost, btnUserPost, btnConnect;
 
     public void receiveData(Object[] incomingData) {
         //Log.d("TEST", incomingData[0].toString());
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.lst_users);
         btnPost = findViewById(R.id.btnPost);
         btnUserPost = findViewById(R.id.btnUserPosts);
+        btnConnect = findViewById(R.id.btnConnect);
 
         //Set event listeners
         listView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -96,6 +97,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ViewPostsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), BluetoothConnectActivity.class);
                 startActivity(intent);
             }
         });
