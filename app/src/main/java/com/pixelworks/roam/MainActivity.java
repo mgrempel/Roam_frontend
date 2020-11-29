@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < user.posts().size(); i++) {
                 posts[i] = new Post(user.posts().get(i).title(), user.posts().get(i).content());
             }
-            users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), posts));
+            users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), user.id(), posts));
         }
 
         //Apply the data to the list view

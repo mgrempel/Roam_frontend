@@ -17,8 +17,9 @@ public class User implements Serializable {
         this.description = description;
     }
 
-    public User(String userName, String firstName, String lastName, String description, Post[] posts) {
+    public User(String userName, String firstName, String lastName, String description, int id, Post[] posts) {
         this(userName, firstName, lastName, description);
+        this.id = id;
         this.posts = posts;
     }
 
