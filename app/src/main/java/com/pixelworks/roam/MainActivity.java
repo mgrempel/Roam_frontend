@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView listView;
     private Button btnPost, btnUserPost, btnConnect;
     private Toolbar toolbar;
+    private ApolloClient apolloClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialize our helpers.
         new SharedPreferencesHelper(this);
+
+        //Initialize our client
+        apolloClient = ApolloClient.builder()
+                .serverUrl(getString(R.string.api_location))
+                .build();
 
         //Initialize our controls
         users = new ArrayList<User>();
@@ -143,11 +149,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFriendData() {
-        //Create our client
-        ApolloClient apolloClient = ApolloClient.builder()
-                .serverUrl(getString(R.string.api_location))
-                .build();
-
         //Create our query
         final GetUsersFriendsByUUIDQuery getFriends = GetUsersFriendsByUUIDQuery.builder()
                 .uuid(SharedPreferencesHelper.getStringValue("uuid"))
@@ -189,11 +190,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void unFriendUser(int userId, int location) {
-        //Create our client
-        ApolloClient apolloClient = ApolloClient.builder()
-                .serverUrl(getString(R.string.api_location))
-                .build();
-
         final RemoveFriendByIdMutation unFriend = RemoveFriendByIdMutation.builder()
                 .uuid(SharedPreferencesHelper.getStringValue("uuid"))
                 .id(userId)
