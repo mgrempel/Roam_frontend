@@ -108,10 +108,30 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
         //Handle callback for turning on bluetooth.
         if(requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                Log.d("TEST", "Bluetooth enabled");
+                checkRadios();
+            }
+            else {
+                finish();
+                checkRadios();
+            }
+        }
+        //Handle callback for enabling location
+        else if(requestCode == 2) {
             if(resultCode != RESULT_OK) {
+                Log.d("TEST", "Location enabled");
+            }
+            else {
                 finish();
             }
         }
+    }
+
+    //Utility for verifying all necessary radios are enabled before starting our broadcast.
+    //Different phones have different orders of turning the radios on, so each of the callbacks will check in before enabling.
+    private void checkRadios() {
+
     }
 
     //Prepare location and bluetooth radios before searching for nearby friends
@@ -145,7 +165,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         //turn on location
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Intent enableLocation = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(enableLocation);
+            startActivityForResult(enableLocation, 2);
         }
 
         //If radios are enabled, we can turn them on.
