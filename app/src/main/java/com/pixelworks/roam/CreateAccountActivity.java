@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
+    //Controls
     private EditText editTextUserName, editTextPassword, editTextEmail, editTextFirstName, editTextLastName, editTextDescription;
     private Button btnCreateAccount;
 
@@ -51,8 +52,6 @@ public class CreateAccountActivity extends AppCompatActivity {
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Ensure all necessary fields are populated
-
                 //Create our GraphQL request
                 CreateUserMutation createUserMutation = CreateUserMutation.builder()
                         .userName(editTextUserName.getText().toString())
@@ -74,6 +73,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                                         String uuid = response.getData().createUser().uuid();
                                         Log.d("TEST", String.valueOf(id));
 
+                                        //Persist our users data, end the activity.
                                         SharedPreferencesHelper.setIntValue("id", id);
                                         SharedPreferencesHelper.setStringValue("uuid", uuid);
 

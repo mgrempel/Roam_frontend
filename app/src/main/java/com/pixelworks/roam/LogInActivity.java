@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LogInActivity extends AppCompatActivity {
 
+    //Controls
     Button btnLogIn, btnCreateAccount;
     EditText editTextUserName, editTextPassword;
 
@@ -27,11 +28,13 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        //find our controls
         btnLogIn = findViewById(R.id.btnLogIn);
         btnCreateAccount = findViewById(R.id.btnCreateAccount);
         editTextUserName = findViewById(R.id.editTextLoginUser);
         editTextPassword = findViewById(R.id.editTextLoginPassword);
 
+        //Register event handlers
         btnLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,9 +45,11 @@ public class LogInActivity extends AppCompatActivity {
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Start our create account activity
                 Intent intent = new Intent(v.getContext(), CreateAccountActivity.class);
                 startActivity(intent);
 
+                //We don't need a login if id and uuid exist, finish the activity.
                 int key = SharedPreferencesHelper.getIntValue("id");
                 String uuid = SharedPreferencesHelper.getStringValue("uuid");
 
@@ -55,6 +60,7 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
+    //Handles user sign in logic
     private void authenticateUser() {
         //Open connection with the API
         ApolloClient apolloClient = ApolloClient.builder()
@@ -89,6 +95,7 @@ public class LogInActivity extends AppCompatActivity {
                                     });
                                 }
                                 else {
+                                    //User was logged in, persist values.
                                     SharedPreferencesHelper.setIntValue("id", id);
                                     SharedPreferencesHelper.setStringValue("uuid", uuid);
                                     finish();

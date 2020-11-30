@@ -112,13 +112,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    //Toolbar logic
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
-
+    //Toolbar logic
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Handles logic for populating friend listview
     private void getFriendData() {
         //Create our query
         final GetUsersFriendsByUUIDQuery getFriends = GetUsersFriendsByUUIDQuery.builder()
@@ -189,12 +190,15 @@ public class MainActivity extends AppCompatActivity {
                 );
     }
 
+    //Handles logic for unfriending a user
     private void unFriendUser(int userId, int location) {
+        //Define our mutation
         final RemoveFriendByIdMutation unFriend = RemoveFriendByIdMutation.builder()
                 .uuid(SharedPreferencesHelper.getStringValue("uuid"))
                 .id(userId)
                 .build();
 
+        //Execute mutation
         apolloClient
                 .mutate(unFriend)
                 .enqueue(
@@ -221,18 +225,19 @@ public class MainActivity extends AppCompatActivity {
                         }
                 );
     }
-
+    //Callback for populating friends listview
     public void receiveData(Object[] incomingData) {
-        //Log.d("TEST", incomingData[0].toString());
-
+        //For each bit of incoming data, parse into locally defined objects.
         for(Object object : incomingData) {
             GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID user = (GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID)object;
 
             Post[] posts = new Post[user.posts.size()];
 
+            //Parse posts
             for(int i = 0; i < user.posts().size(); i++) {
                 posts[i] = new Post(user.posts().get(i).title(), user.posts().get(i).content());
             }
+            //Create new user
             users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), user.id(), posts));
         }
 
@@ -245,9 +250,12 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
     }
 
+    //Callback for removing friends
     public void removeUser(int index) {
+        //Remove user from our list
         users.remove(index);
 
+        //Update the listview
         ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(
                 this,
                 android.R.layout.simple_list_item_1,

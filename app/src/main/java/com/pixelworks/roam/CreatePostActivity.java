@@ -30,6 +30,7 @@ public class CreatePostActivity extends AppCompatActivity {
         txtContent = findViewById(R.id.txtContent);
         btnPost = findViewById(R.id.btnPost);
 
+        //Register event handlers
         btnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +58,7 @@ public class CreatePostActivity extends AppCompatActivity {
                                     new ApolloCall.Callback<CreatePostMutation.Data>() {
                                         @Override
                                         public void onResponse(@NotNull Response<CreatePostMutation.Data> response) {
+                                            //Successful post, end the activity
                                             finish();
                                         }
 

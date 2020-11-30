@@ -2,7 +2,9 @@ package com.pixelworks.roam;
 
 import java.io.Serializable;
 
+//Class represents attributes and behaviours of a User
 public class User implements Serializable {
+    //Attributes
     private String userName;
     private String firstName;
     private String lastName;
@@ -10,6 +12,7 @@ public class User implements Serializable {
     private int id;
     private Post[] posts;
 
+    //initializes attributes
     public User(String userName, String firstName, String lastName, String description) {
         this.userName = userName;
         this.firstName = firstName;
@@ -28,30 +31,38 @@ public class User implements Serializable {
         this.id = id;
     }
 
+    //Retrieves username
     public String getUserName() {
         return userName;
     }
 
+    //Retrieves first name
     public String getFirstName() {
         return firstName;
     }
 
+    //Retrieves last name
     public String getLastName() {
         return lastName;
     }
 
+    //Retrieves description
     public String getDescription() {
         return description;
     }
 
+    //Retrieves ID
     public int getId() { return id; }
 
+    //Retrieves posts
     public Post[] getPosts() {
         return posts;
     }
 
+    //Handles toString behaviour.
     @Override
     public String toString() {
+        //Some cases may have null first and last names, adjust output based on available attributes.
         if(firstName == null && lastName == null) {
             return userName;
         }
