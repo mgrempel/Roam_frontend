@@ -1,0 +1,13 @@
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreferenceCompat
+        app:key="DarkMode"
+        app:title="Dark Mode" />
+
+    <Preference
+        app:key="signOut"
+        app:title="Sign Out"
+        app:summary="Safely sign out of the roam application."/>
+
+</PreferenceScreen>
