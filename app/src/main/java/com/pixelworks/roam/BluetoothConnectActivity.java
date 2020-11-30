@@ -65,6 +65,10 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     //Controls
     private ListView lst_users;
 
+    //Client
+    private ApolloClient apolloClient;
+
+    //Permission codes
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
     @Override
@@ -74,6 +78,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         foundIds = new ArrayList<Integer>();
         users = new ArrayList<User>();
         lst_users = findViewById(R.id.lst_users);
+
+        //Initialize our client
+        apolloClient = ApolloClient.builder()
+                .serverUrl(getString(R.string.api_location))
+                .build();
 
         //Handle our onclick for the listview
         lst_users.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -288,11 +297,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     }
 
     private void processUserID(int userId) {
-        //Call the API and find the user associated with the ID.
-        ApolloClient apolloClient = ApolloClient.builder()
-                .serverUrl(getString(R.string.api_location))
-                .build();
-
         final GetUserByIdQuery getUser = GetUserByIdQuery.builder()
                 .id(userId)
                 .build();
@@ -332,11 +336,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     }
 
     private void addFriend(int friendId) {
-        //Create our client
-        ApolloClient apolloClient = ApolloClient.builder()
-                .serverUrl(getString(R.string.api_location))
-                .build();
-
         final AddFriendByIdMutation addFriend = AddFriendByIdMutation.builder()
                                                     .uuid(SharedPreferencesHelper.getStringValue("uuid"))
                                                     .id(friendId)
