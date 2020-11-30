@@ -1,6 +1,7 @@
 package com.pixelworks.roam;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,46 +34,15 @@ public class MainActivity extends AppCompatActivity {
 
     private ListView listView;
     private Button btnPost, btnUserPost, btnConnect;
-
-    public void receiveData(Object[] incomingData) {
-        //Log.d("TEST", incomingData[0].toString());
-
-        for(Object object : incomingData) {
-            GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID user = (GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID)object;
-
-            Post[] posts = new Post[user.posts.size()];
-
-            for(int i = 0; i < user.posts().size(); i++) {
-                posts[i] = new Post(user.posts().get(i).title(), user.posts().get(i).content());
-            }
-            users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), user.id(), posts));
-        }
-
-        //Apply the data to the list view
-        ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(
-                this,
-                android.R.layout.simple_list_item_1,
-                users);
-        //Update the ListView
-        listView.setAdapter(arrayAdapter);
-    }
-
-    public void removeUser(int index) {
-        users.remove(index);
-
-        ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(
-                this,
-                android.R.layout.simple_list_item_1,
-                users
-        );
-
-        listView.setAdapter(arrayAdapter);
-    }
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         //Initialize our helpers.
         new SharedPreferencesHelper(this);
@@ -133,6 +105,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -234,5 +224,40 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                 );
+    }
+
+    public void receiveData(Object[] incomingData) {
+        //Log.d("TEST", incomingData[0].toString());
+
+        for(Object object : incomingData) {
+            GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID user = (GetUsersFriendsByUUIDQuery.GetUserFriendsByUUID)object;
+
+            Post[] posts = new Post[user.posts.size()];
+
+            for(int i = 0; i < user.posts().size(); i++) {
+                posts[i] = new Post(user.posts().get(i).title(), user.posts().get(i).content());
+            }
+            users.add(new User(user.userName(), user.firstName(), user.lastName(), user.description(), user.id(), posts));
+        }
+
+        //Apply the data to the list view
+        ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(
+                this,
+                android.R.layout.simple_list_item_1,
+                users);
+        //Update the ListView
+        listView.setAdapter(arrayAdapter);
+    }
+
+    public void removeUser(int index) {
+        users.remove(index);
+
+        ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(
+                this,
+                android.R.layout.simple_list_item_1,
+                users
+        );
+
+        listView.setAdapter(arrayAdapter);
     }
 }
