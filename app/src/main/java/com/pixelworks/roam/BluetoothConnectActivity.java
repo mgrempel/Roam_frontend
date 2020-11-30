@@ -102,6 +102,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         }
     }
 
+    //Handle our callbacks for bluetooth and location services.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -114,13 +115,13 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             }
             else {
                 finish();
-                checkRadios();
             }
         }
         //Handle callback for enabling location
         else if(requestCode == 2) {
             if(resultCode != RESULT_OK) {
                 Log.d("TEST", "Location enabled");
+                checkRadios();
             }
             else {
                 finish();
@@ -130,23 +131,24 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     //Utility for verifying all necessary radios are enabled before starting our broadcast.
     //Different phones have different orders of turning the radios on, so each of the callbacks will check in before enabling.
-    private void checkRadios() {
-
+    private Boolean checkRadios() {
+        //If radios are enabled, we can turn them on.
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && bluetoothAdapter.isEnabled()) {
+            advertiserPrimer();
+            listenerPrimer();
+            return true;
+        }
+        return false;
     }
 
     //Prepare location and bluetooth radios before searching for nearby friends
     private void prepareRadios() {
+
         //Get our bluetooth object
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothAdapter == null) {
             //Device doesn't have bluetooth, we're done here.
             finish();
-        }
-
-        //Turn on the adapter
-        if(!bluetoothAdapter.isEnabled()) {
-            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBluetooth, 1);
         }
 
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -155,23 +157,25 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             finish();
         }
 
-        //Request location permissions
-        if ( Build.VERSION.SDK_INT >= 23){
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED  ){
-                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
+        if(!checkRadios()) {
+            //Turn on the adapter
+            if(!bluetoothAdapter.isEnabled()) {
+                Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBluetooth, 1);
             }
-        }
 
-        //turn on location
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Intent enableLocation = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivityForResult(enableLocation, 2);
-        }
+            //Request location permissions
+            if ( Build.VERSION.SDK_INT >= 23){
+                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED  ){
+                    requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE_ASK_PERMISSIONS);
+                }
+            }
 
-        //If radios are enabled, we can turn them on.
-        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && bluetoothAdapter.isEnabled()) {
-            advertiserPrimer();
-            listenerPrimer();
+            //turn on location
+            if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                Intent enableLocation = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivityForResult(enableLocation, 2);
+            }
         }
     }
 
