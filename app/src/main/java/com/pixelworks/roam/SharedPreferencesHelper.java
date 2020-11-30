@@ -33,4 +33,10 @@ public class SharedPreferencesHelper {
         int result = preferences.getInt(key, -1);
         return result;
     }
+
+    public static void logOut() {
+        editor.remove("uuid");
+        editor.remove("key");
+        editor.apply();
+    }
 }

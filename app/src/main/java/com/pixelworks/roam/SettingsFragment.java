@@ -16,7 +16,10 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Log.d("TEST", "Logout button clicked.");
+                //Clear out our UUID and ID shared preferences
+                SharedPreferencesHelper.logOut();
 
+                getActivity().finish();
                 return true;
             }
         });
