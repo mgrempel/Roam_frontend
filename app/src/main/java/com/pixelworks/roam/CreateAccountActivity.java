@@ -52,46 +52,56 @@ public class CreateAccountActivity extends AppCompatActivity {
         btnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Create our GraphQL request
-                CreateUserMutation createUserMutation = CreateUserMutation.builder()
-                        .userName(editTextUserName.getText().toString())
-                        .password(editTextPassword.getText().toString())
-                        .email(editTextEmail.getText().toString())
-                        .firstName(editTextFirstName.getText().toString())
-                        .lastName(editTextLastName.getText().toString())
-                        .description(editTextDescription.getText().toString())
-                        .build();
+                if(editTextUserName.getText().toString().equals("") || editTextPassword.getText().toString().equals("")) {
+                    Toast.makeText(v.getContext(), "Please enter a username and password", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    //Create our GraphQL request
+                    CreateUserMutation createUserMutation = CreateUserMutation.builder()
+                            .userName(editTextUserName.getText().toString())
+                            .password(editTextPassword.getText().toString())
+                            .email(editTextEmail.getText().toString())
+                            .firstName(editTextFirstName.getText().toString())
+                            .lastName(editTextLastName.getText().toString())
+                            .description(editTextDescription.getText().toString())
+                            .build();
 
-                //Let's ring up the GQL server
-                apolloClient
-                        .mutate(createUserMutation)
-                        .enqueue(
-                                new ApolloCall.Callback<CreateUserMutation.Data>() {
-                                    @Override
-                                    public void onResponse(@NotNull Response<CreateUserMutation.Data> response) {
-                                        int id = response.getData().createUser().id();
-                                        String uuid = response.getData().createUser().uuid();
-                                        Log.d("TEST", String.valueOf(id));
-
-                                        //Persist our users data, end the activity.
-                                        SharedPreferencesHelper.setIntValue("id", id);
-                                        SharedPreferencesHelper.setStringValue("uuid", uuid);
-
-                                        finish();
-                                    }
-
-                                    @Override
-                                    public void onFailure(@NotNull ApolloException e) {
-                                        Log.d("TEST", e.getCause().toString());
-                                        CreateAccountActivity createAccountActivity = CreateAccountActivity.this;
-                                        createAccountActivity.runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                Toast.makeText(createAccountActivity, "An error has occurred!", Toast.LENGTH_SHORT).show();
+                    //Let's ring up the GQL server
+                    apolloClient
+                            .mutate(createUserMutation)
+                            .enqueue(
+                                    new ApolloCall.Callback<CreateUserMutation.Data>() {
+                                        @Override
+                                        public void onResponse(@NotNull Response<CreateUserMutation.Data> response) {
+                                            if(response.getErrors() != null) {
+                                                Log.d("TEST", "API success, invalid fields.");
                                             }
-                                        });
+                                            else {
+                                                int id = response.getData().createUser().id();
+                                                String uuid = response.getData().createUser().uuid();
+                                                Log.d("TEST", String.valueOf(id));
+
+                                                //Persist our users data, end the activity.
+                                                SharedPreferencesHelper.setIntValue("id", id);
+                                                SharedPreferencesHelper.setStringValue("uuid", uuid);
+
+                                                finish();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(@NotNull ApolloException e) {
+                                            Log.d("TEST", e.getCause().toString());
+                                            CreateAccountActivity createAccountActivity = CreateAccountActivity.this;
+                                            createAccountActivity.runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    Toast.makeText(createAccountActivity, "An error has occurred!", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
                                     }
-                                }
-                        );
+                            );
+                }
             }
         });
     }
