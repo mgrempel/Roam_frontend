@@ -37,10 +37,12 @@ public class ViewPostsActivity extends AppCompatActivity {
                 .serverUrl(getString(R.string.api_location))
                 .build();
 
+        //Structure query
         final GetUserTreeByUUIDQuery getSelf = GetUserTreeByUUIDQuery.builder()
                 .uuid(SharedPreferencesHelper.getStringValue("uuid"))
                 .build();
 
+        //Execute query
         apolloClient
                 .query(getSelf)
                 .enqueue(

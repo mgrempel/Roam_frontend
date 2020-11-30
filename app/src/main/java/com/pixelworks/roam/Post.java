@@ -2,6 +2,7 @@ package com.pixelworks.roam;
 
 import java.io.Serializable;
 
+//Class representing Post attributes and behaviours.
 public class Post implements Serializable {
     private String title, description;
 

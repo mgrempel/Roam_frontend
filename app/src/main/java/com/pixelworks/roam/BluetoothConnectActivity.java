@@ -59,7 +59,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private ScanCallback scanCallback;
 
     //Ids of those around us
+    //Ignore list, ids are added here to avoid repitition
     private ArrayList<Integer> foundIds;
+    //List of found users.
     private ArrayList<User> users;
 
     //Controls
@@ -160,14 +162,16 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             finish();
         }
 
+        //Get our location object
         locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         if(locationManager == null) {
             //Device doesn't have a GPS
             finish();
         }
 
+        //If the radios aren't running, we should enable them.
         if(!checkRadios()) {
-            //Turn on the adapter
+            //Turn on bluetooth
             if(!bluetoothAdapter.isEnabled()) {
                 Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBluetooth, 1);
@@ -207,6 +211,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 .addServiceData(puuid, String.valueOf(SharedPreferencesHelper.getIntValue("id")).getBytes(StandardCharsets.UTF_8))
                 .build();
 
+        //Configure our callback
         advertiseCallback = new AdvertiseCallback() {
             @Override
             public void onStartSuccess(AdvertiseSettings settingsInEffect) {
@@ -228,6 +233,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         }
     }
 
+    //Prepares our BLE scanner and starts scanning.
     private void listenerPrimer() {
         //Define our callbacks
         scanCallback = new ScanCallback() {
@@ -246,6 +252,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                     Log.d("TEST", "Possible corruption in transmission, discarding data.");
                 }
 
+                //If we have a valid friend ID, and we haven't already recorded the friend
                 if(friendId != -1 && !foundIds.contains(friendId)) {
                     Log.d("TEST", String.valueOf(friendId));
                     Log.d("TEST", "Successfully received results from scan");
@@ -257,7 +264,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                     processUserID(friendId);
                 }
             }
-
+            //Scan failed
             @Override
             public void onScanFailed(int errorCode) {
                 Log.d("TEST", "Bluetooth error code returned:" + errorCode);
@@ -268,7 +275,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         ScanFilter scanFilter = new ScanFilter.Builder()
                 .setServiceUuid(new ParcelUuid(UUID.fromString(getString(R.string.serviceSig))))
                 .build();
-
+        //Add the filter to our list.
         ArrayList<ScanFilter> filters = new ArrayList<ScanFilter>();
         filters.add(scanFilter);
 
@@ -283,19 +290,23 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         Log.d("TEST", "Started the scanner");
     }
 
+    //Callback for location permission request
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_ASK_PERMISSIONS:
                 if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    //Let's stop the activity if the user doesn't want to grant permissions
                     finish();
                 }
                 break;
             default:
+                //Let the superclass handle unexpected data
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
+    //Resolve a discovered userID to a tangible user, pass user off to a callback.
     private void processUserID(int userId) {
         final GetUserByIdQuery getUser = GetUserByIdQuery.builder()
                 .id(userId)
@@ -321,9 +332,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                             }
                         }
                 );
-        //Process response add to arraylist of users
     }
 
+    //Callback for queried user data. Adds the user to our list, and updates the adapter.
     private void receiveData(User user) {
         Log.d("TEST", "Query returned details for " + user.getUserName());
 
@@ -332,9 +343,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         ArrayAdapter<User> arrayAdapter = new ArrayAdapter<User>(this,
                                                                   android.R.layout.simple_list_item_1,
                                                                   users);
+        //Update the listview
         lst_users.setAdapter(arrayAdapter);
     }
 
+    //Handles logic for adding a friend
     private void addFriend(int friendId) {
         final AddFriendByIdMutation addFriend = AddFriendByIdMutation.builder()
                                                     .uuid(SharedPreferencesHelper.getStringValue("uuid"))
